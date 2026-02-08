@@ -127,7 +127,7 @@ impl RadarApp {
     /// Render top status bar
     fn render_top_panel(&mut self, ui: &mut egui::Ui) {
         ui.horizontal(|ui| {
-            ui.heading("ATC 24 Radar - TopSky Interface");
+            ui.heading("FeritScope");
 
             ui.separator();
 
