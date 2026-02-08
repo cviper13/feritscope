@@ -173,68 +173,75 @@ impl RadarApp {
 
         ui.separator();
 
-        egui::ScrollArea::vertical().show(ui, |ui| {
-            let aircraft = self.state.get_aircraft();
-            let filter = self.ui_state.search_filter.to_lowercase();
+        ui.vertical(|ui| {
+            // Aircraft scroll area — fixed height
+            egui::ScrollArea
+                ::vertical()
+                .id_source("aircraft_scroll")
+                .max_height(300.0) // adjust as needed
+                .show(ui, |ui| {
+                    let aircraft = self.state.get_aircraft();
+                    let filter = self.ui_state.search_filter.to_lowercase();
+                    let mut sorted: Vec<_> = aircraft.values().collect();
+                    sorted.sort_by(|a, b| a.callsign.cmp(&b.callsign));
 
-            let mut sorted: Vec<_> = aircraft.values().collect();
-            sorted.sort_by(|a, b| a.callsign.cmp(&b.callsign));
+                    for tracked in sorted {
+                        if !filter.is_empty() && !tracked.callsign.to_lowercase().contains(&filter) {
+                            continue;
+                        }
 
-            for tracked in sorted {
-                if !filter.is_empty() && !tracked.callsign.to_lowercase().contains(&filter) {
-                    continue;
-                }
+                        let is_selected =
+                            self.renderer.selected_aircraft.as_ref() == Some(&tracked.callsign);
 
-                let is_selected =
-                    self.renderer.selected_aircraft.as_ref() == Some(&tracked.callsign);
+                        let response = ui.selectable_label(is_selected, &tracked.callsign);
 
-                let response = ui.selectable_label(is_selected, &tracked.callsign);
+                        if response.clicked() {
+                            if is_selected {
+                                self.renderer.selected_aircraft = None;
+                            } else {
+                                self.renderer.selected_aircraft = Some(tracked.callsign.clone());
+                                self.projection.center = (
+                                    tracked.info.position.x,
+                                    tracked.info.position.y,
+                                );
+                            }
+                        }
 
-                if response.clicked() {
-                    if is_selected {
-                        self.renderer.selected_aircraft = None;
-                    } else {
-                        self.renderer.selected_aircraft = Some(tracked.callsign.clone());
+                        ui.indent(tracked.callsign.clone(), |ui| {
+                            ui.small(format!("Type: {}", tracked.info.aircraft_type));
+                            ui.small(format!("Alt: {:.0} ft", tracked.info.altitude));
+                            ui.small(format!("GS: {:.0} kt", tracked.info.ground_speed));
+                            ui.small(format!("Hdg: {:.0}°", tracked.info.heading));
+                            if let Some(fp) = &tracked.flight_plan {
+                                ui.small(format!("{} → {}", fp.departing, fp.arriving));
+                            }
+                            if tracked.info.is_emergency_occuring {
+                                ui.colored_label(egui::Color32::RED, "⚠ EMERGENCY");
+                            }
+                        });
 
-                        // Center view on selected aircraft
-                        self.projection.center = (tracked.info.position.x, tracked.info.position.y);
-                    }
-                }
-
-                // Show details
-                ui.indent(tracked.callsign.clone(), |ui| {
-                    ui.small(format!("Type: {}", tracked.info.aircraft_type));
-                    ui.small(format!("Alt: {:.0} ft", tracked.info.altitude));
-                    ui.small(format!("GS: {:.0} kt", tracked.info.ground_speed));
-                    ui.small(format!("Hdg: {:.0}°", tracked.info.heading));
-
-                    if let Some(fp) = &tracked.flight_plan {
-                        ui.small(format!("{} → {}", fp.departing, fp.arriving));
-                    }
-
-                    if tracked.info.is_emergency_occuring {
-                        ui.colored_label(egui::Color32::RED, "⚠ EMERGENCY");
-                    }
-                });
-
-                ui.separator();
-            }
-        });
-
-        // ATIS section
-        ui.separator();
-        ui.heading("ATIS");
-
-        egui::ScrollArea::vertical().show(ui, |ui| {
-            let atis_map = self.state.get_all_atis();
-
-            for (airport, atis) in atis_map {
-                ui.collapsing(format!("{} - {}", airport, atis.letter), |ui| {
-                    for line in &atis.lines {
-                        ui.small(line);
+                        ui.separator();
                     }
                 });
-            }
+
+            ui.separator();
+            ui.heading("ATIS");
+
+            // ATIS scroll area — fill remaining space
+            egui::ScrollArea
+                ::vertical()
+                .id_source("atis_scroll")
+                .max_height(200.0) // adjust as needed
+                .show(ui, |ui| {
+                    let atis_map = self.state.get_all_atis();
+                    for (airport, atis) in atis_map {
+                        ui.collapsing(format!("{} - {}", airport, atis.letter), |ui| {
+                            for line in &atis.lines {
+                                ui.small(line);
+                            }
+                        });
+                    }
+                });
         });
     }
 

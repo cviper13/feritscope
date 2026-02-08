@@ -57,13 +57,13 @@ fn main() -> Result<()> {
         viewport: egui::ViewportBuilder::default()
             .with_inner_size([1920.0, 1080.0])
             .with_min_inner_size([1280.0, 720.0])
-            .with_title("ATC 24 Radar - TopSky Interface")
+            .with_title("FeritScope")
             .with_icon(load_icon()),
         ..Default::default()
     };
 
     eframe::run_native(
-        "ATC 24 Radar",
+        "FeritScope",
         native_options,
         Box::new(move |cc| {
             // Configure fonts with user's config
