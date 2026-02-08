@@ -1,6 +1,5 @@
 use parking_lot::RwLock;
 use std::collections::HashMap;
-use std::sync::Arc;
 
 use crate::config::RadarConfig;
 use crate::types::{ Atis, ControllerPosition, FlightPlan, TrackedAircraft };

@@ -1,4 +1,4 @@
-use egui::{ Color32, Pos2, Rect, Stroke, Vec2 };
+use egui::{ Color32, Pos2, Stroke, Vec2 };
 use std::collections::HashMap;
 
 use crate::config::{ ColorConfig, DisplayConfig };
