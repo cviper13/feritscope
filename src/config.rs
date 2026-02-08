@@ -1,7 +1,7 @@
 use anyhow::{ Context, Result };
 use notify::{ Config as NotifyConfig, RecommendedWatcher, RecursiveMode, Watcher };
 use serde::{ Deserialize, Serialize };
-use std::path::{ PathBuf };
+use std::path::PathBuf;
 use std::sync::Arc;
 use std::time::Duration;
 use tokio::sync::mpsc;
