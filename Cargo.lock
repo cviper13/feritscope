@@ -1192,7 +1192,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "ferittescope"
+name = "feritscope"
 version = "0.1.0"
 dependencies = [
  "anyhow",
