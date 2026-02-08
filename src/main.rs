@@ -83,16 +83,9 @@ fn main() -> Result<()> {
 fn configure_fonts(ctx: &egui::Context) {
     let mut fonts = egui::FontDefinitions::default();
 
-    // Add monospace font for radar tags (if available)
-    // fonts.font_data.insert(
-    //     "radar_mono".to_owned(),
-    //     egui::FontData::from_static(include_bytes!("../assets/fonts/RobotoMono-Regular.ttf")),
-    // );
-
-    fonts.families.insert(
-        egui::FontFamily::Monospace,
-        vec!["Hack".to_owned(), "Ubuntu-Mono".to_owned(), "monospace".to_owned()]
-    );
+    // Use built-in proportional font for monospace family
+    // This ensures compatibility across all platforms
+    fonts.families.get_mut(&egui::FontFamily::Monospace).unwrap().insert(0, "Hack".to_owned());
 
     ctx.set_fonts(fonts);
 }
