@@ -17,3 +17,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Project created files
+config.toml
